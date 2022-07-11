@@ -1,23 +1,28 @@
-import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import * as React from "react";
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import CssBaseline from "@mui/material/CssBaseline";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import Layers from "@mui/icons-material/Layers";
+import BarChart from "@mui/icons-material/BarChart";
+import Person from "@mui/icons-material/Person";
+
+import { NavLink } from "react-router-dom";
+import { ListItemButton, Stack } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -83,6 +88,18 @@ export default function Menu({ open, onDrawerClose }: MenuProp) {
     onDrawerClose();
   };
 
+  const MyNavLink = React.forwardRef<any, any>((props, ref) => (
+    <NavLink
+      ref={ref}
+      to={props.to}
+      className={({ isActive }) =>
+        `${props.className} ${isActive ? props.activeClassName : ""}`
+      }
+    >
+      {props.children}
+    </NavLink>
+  ));
+
   return (
     <Drawer
       sx={{
@@ -98,22 +115,57 @@ export default function Menu({ open, onDrawerClose }: MenuProp) {
       open={open}
     >
       <DrawerHeader>
-        <IconButton onClick={handleDrawerClose}>
-          {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
+        <Stack direction="row" alignItems="center">
+          <img
+            src={`${process.env.PUBLIC_URL}/images/cm_logo.png`}
+            style={{ height: 30 }}
+          />
+          <IconButton onClick={handleDrawerClose}>
+            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </Stack>
       </DrawerHeader>
       <Divider />
       <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        {/* Stock */}
+        <ListItem
+          button
+          to="/stock"
+          component={MyNavLink}
+          activeClassName="Mui-selected"
+          exact
+        >
+          <ListItemIcon>
+            <Layers />
+          </ListItemIcon>
+          <ListItemText primary="Stock" />
+        </ListItem>
+        {/* Report */}
+        <ListItem
+          button
+          to="/report"
+          component={MyNavLink}
+          activeClassName="Mui-selected"
+          exact
+        >
+          <ListItemIcon>
+            <BarChart />
+          </ListItemIcon>
+          <ListItemText primary="Report" />
+        </ListItem>
+        {/*About us */}
+        <ListItem
+          button
+          to="/aboutus"
+          component={MyNavLink}
+          activeClassName="Mui-selected"
+          exact
+        >
+          <ListItemIcon>
+            <Person />
+          </ListItemIcon>
+          <ListItemText primary="AboutUs" />
+        </ListItem>
       </List>
       <Divider />
       <List>

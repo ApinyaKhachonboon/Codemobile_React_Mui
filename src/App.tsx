@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { createTheme, styled, ThemeProvider, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -23,6 +23,12 @@ import Menu from './components/layouts/Menu';
 import { Link, Navigate, Route, Routes } from 'react-router-dom';
 import LoginPage from './components/pages/LoginPage';
 import RegisterPage from './components/pages/RegisterPage';
+import StockPage from './components/pages/StockPage';
+import StockCreatePage from './components/pages/StockCreatePage';
+import StockEditPage from './components/pages/StockEditPage';
+import ReportPage from './components/pages/ReportPage';
+import AboutUs from './components/pages/AboutUs';
+import { blue, blueGrey, lightBlue, purple } from '@mui/material/colors';
 
 const drawerWidth = 240;
 
@@ -44,6 +50,33 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     marginLeft: 0,
   }),
 }));
+
+const theme = createTheme({
+  components: {
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundImage: "url(" + `${process.env.PUBLIC_URL}/images/background_menu.jpg` + ")",
+          width: drawerWidth,
+        },
+      },
+    },
+  },
+  typography: {
+    fontFamily: "Fredoka",
+    fontWeightLight: 300,
+    fontWeightRegular: 400,
+    fontWeightMedium: 500,
+    fontWeightBold: 600,
+  },
+  spacing: 8,
+  palette: {
+    primary: blueGrey,
+    background: {
+      default: "#CFD2D6",
+    },
+  },
+});
 
 interface AppBarProps extends MuiAppBarProps {
   open?: boolean;
@@ -76,8 +109,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 export default function App() {
-  const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -88,20 +120,27 @@ export default function App() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <Header open={open} onDrawerOpen={handleDrawerOpen} />
-      <Menu open={open} onDrawerClose={handleDrawerClose} />
-      <Main open={open}>
-        <DrawerHeader />
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="*" element={<Notfound />} />
-        </Routes>
-      </Main>
-    </Box>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <Header open={open} onDrawerOpen={handleDrawerOpen} />
+        <Menu open={open} onDrawerClose={handleDrawerClose} />
+        <Main open={open}>
+          <DrawerHeader />
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/stock" element={<StockPage />} />
+            <Route path="/stock/create" element={<StockCreatePage />} />
+            <Route path="/stock/edit/:id" element={<StockEditPage />} />
+            <Route path="/report" element={<ReportPage />} />
+            <Route path="/aboutus" element={<AboutUs />} />
+            <Route path="/" element={<Navigate to="/login" />} />
+            <Route path="*" element={<Notfound />} />
+          </Routes>
+        </Main>
+      </Box>
+    </ThemeProvider>
   );
 }
 
