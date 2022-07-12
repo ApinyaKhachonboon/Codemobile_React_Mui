@@ -1,7 +1,10 @@
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { Formik, FormikProps } from "formik";
-import { Box, Button, Card, CardContent, Stack, TextField, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
+import { User } from "../../../types/user.type";
+import { httpClient } from "../../../../src/utils/httpclient";
+import { server } from "../../../Constants";
 
 type RegisterPageProps = {
   //
@@ -9,6 +12,10 @@ type RegisterPageProps = {
 
 const RegisterPage: React.FC<any> = () => {
   const navigate = useNavigate();
+  const classes: any = {
+    root: { display: "flex", justifyContent: "center" },
+    buttons: { marginTop: 2 },
+  }
   const [account, setAccount] = React.useState({ username: "", password: "" })
 
   const showFormV1 = ({
@@ -43,7 +50,7 @@ const RegisterPage: React.FC<any> = () => {
         <button type="submit" disabled={isSubmitting}>
           Submit
         </button>
-        <button onClick={() => navigate(-1)}>Back</button>
+        <button onClick={() => navigate("/login")}>Back</button>
       </form>
     )
   }
@@ -53,7 +60,7 @@ const RegisterPage: React.FC<any> = () => {
     handleChange,
     values,
     isSubmitting
-  }: FormikProps<any>) => {
+  }: FormikProps<User>) => {
     return (
       <form onSubmit={(handleSubmit)}>
         <TextField
@@ -80,7 +87,7 @@ const RegisterPage: React.FC<any> = () => {
           variant="outlined"
         />
         {/* <span>Debug {JSON.stringify(account)}</span> */}
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} sx={classes.buttons}>
           <Button onClick={() => navigate("/login")} type="button" fullWidth variant="outlined">
             Cancel
           </Button>
@@ -92,22 +99,29 @@ const RegisterPage: React.FC<any> = () => {
       </form>
     )
   }
+
+  const initailValues: User = { username: "lek", password: "xxxx" }
   return (
     <>
-      <Box>
+      <Box sx={classes.root}>
         <Card sx={{ maxWidth: 345 }}>
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               Register
             </Typography >
             <Formik
-              onSubmit={(values, { setSubmitting }) => {
-                alert(JSON.stringify(values));
+              onSubmit={async (values, { setSubmitting }) => {
+                const result = await httpClient.post(
+                  server.REGISTER_URL,
+                  values
+                )
+
+                alert(JSON.stringify(result.data));
                 setTimeout(() => {
                   setSubmitting(false);
                 }, 2000)
               }}
-              initialValues={{ username: "lek", password: "xxxx" }} >
+              initialValues={initailValues} >
               {(props) => showFormV2(props)}
             </Formik>
           </CardContent>
