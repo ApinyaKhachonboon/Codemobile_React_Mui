@@ -1,17 +1,17 @@
 import {
-    REGISTER_FAILED,
-    REGISTER_FETCHING,
-    REGISTER_SUCCESS,
+    LOGIN_FAILED,
+    LOGIN_FETCHING,
+    LOGIN_SUCCESS,
   } from "../Constants";
   
   /// init type
-  export interface RegisterState {
+  export interface LoginState {
     isFetching: boolean;
     isError: boolean;
     result: any;
   }
   
-  const initialState: RegisterState = {
+  const initialState: LoginState = {
     isFetching: false,
     isError: false,
     result: null,
@@ -20,13 +20,13 @@ import {
   export default (
     state = initialState,
     { type, payload }: any
-  ): RegisterState => {
+  ): LoginState => {
     switch (type) {
-      case REGISTER_FETCHING:
+      case LOGIN_FETCHING:
         return { ...state, isFetching: true, isError: false, result: null };
-      case REGISTER_SUCCESS:
+      case LOGIN_SUCCESS:
         return { ...state, isFetching: false, isError: false, result: payload };
-      case REGISTER_FAILED:
+      case LOGIN_FAILED:
         return { ...state, isFetching: false, isError: true, result: null };
       default:
         return state;

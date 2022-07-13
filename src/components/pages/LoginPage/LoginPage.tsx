@@ -1,18 +1,27 @@
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { Formik, FormikProps } from "formik";
-import { Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
 import { User } from "../../../types/user.type";
+import { useAppDispatch } from "../../..";
+import { useSelector } from "react-redux";
+import { RootReducer } from "../../../reducers";
+import * as loginActions from "../../../actions/login.action";
 
 type LoginPageProps = {
   //
 };
 
 const LoginPage: React.FC<any> = () => {
+  const loginReducer = useSelector(
+    (state: RootReducer) => state.loginReducer
+  );
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const classes: any = {
     root: { display: "flex", justifyContent: "center" },
-    buttons: {marginTop: 2},
+    buttons: { marginTop: 2 },
   }
   const [account, setAccount] = React.useState({ username: "", password: "" })
 
@@ -85,12 +94,13 @@ const LoginPage: React.FC<any> = () => {
           variant="outlined"
         />
         {/* <span>Debug {JSON.stringify(account)}</span> */}
+        {loginReducer.isError && <Alert severity="error">Login failed</Alert>}
         <Stack direction="row" spacing={2} sx={classes.buttons}>
           <Button onClick={() => navigate("/register")} type="button" fullWidth variant="outlined">
             Register
           </Button>
-          <Button type="submit" fullWidth variant="contained" color="primary" disabled={isSubmitting}>
-            Create
+          <Button type="submit" fullWidth variant="contained" color="primary" disabled={loginReducer.isFetching}>
+            Login
           </Button>
         </Stack>
 
@@ -98,7 +108,7 @@ const LoginPage: React.FC<any> = () => {
     )
   }
 
-  const initailValues: User = { username: "lek", password : "xxxx"};
+  const initailValues: User = { username: "lek", password: "xxxx" };
   return (
     <>
       <Box sx={classes.root}>
@@ -108,11 +118,8 @@ const LoginPage: React.FC<any> = () => {
               Login
             </Typography >
             <Formik
-              onSubmit={(values, { setSubmitting }) => {
-                alert(JSON.stringify(values));
-                setTimeout(() => {
-                  setSubmitting(false);
-                }, 2000)
+              onSubmit={(values, { }) => {
+                dispatch(loginActions.login(values, navigate))
               }}
               initialValues={initailValues} >
               {(props) => showFormV2(props)}

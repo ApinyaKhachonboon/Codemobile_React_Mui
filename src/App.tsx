@@ -29,6 +29,10 @@ import StockEditPage from './components/pages/StockEditPage';
 import ReportPage from './components/pages/ReportPage';
 import AboutUs from './components/pages/AboutUs';
 import { blue, blueGrey, lightBlue, purple } from '@mui/material/colors';
+import { RootReducer } from './reducers';
+import { useSelector } from 'react-redux';
+import * as loginActions from "./actions/login.action";
+import { useAppDispatch } from '.';
 
 const drawerWidth = 240;
 
@@ -110,6 +114,10 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export default function App() {
   const [open, setOpen] = React.useState(true);
+  const loginReducer = useSelector(
+    (state: RootReducer) => state.loginReducer
+  );
+  const dispatch = useAppDispatch();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -119,12 +127,18 @@ export default function App() {
     setOpen(false);
   };
 
+  React.useEffect(() => {
+    /// กรณี component ถูกสร้างขึ้นมาใหม่
+    dispatch(loginActions.restoreLogin());
+  }, [])
+
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        {true && <Header open={open} onDrawerOpen={handleDrawerOpen} />}
-        {true && <Menu open={open} onDrawerClose={handleDrawerClose} />}
+        {loginReducer.result && <Header open={open} onDrawerOpen={handleDrawerOpen} />}
+        {loginReducer.result && <Menu open={open} onDrawerClose={handleDrawerClose} />}
         <Main open={open}>
           <DrawerHeader />
           <Routes>

@@ -1,17 +1,28 @@
 import * as React from "react";
 import { useNavigate } from "react-router";
 import { Formik, FormikProps } from "formik";
-import { Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
+import { Alert, Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
 import { User } from "../../../types/user.type";
 import { httpClient } from "../../../../src/utils/httpclient";
 import { server } from "../../../Constants";
+import * as registerActions from "../../../actions/register.action"
+import { useSelector } from "react-redux";
+import { RootReducer } from "../../../reducers";
+import { useAppDispatch } from "../../..";
+
 
 type RegisterPageProps = {
   //
 };
 
 const RegisterPage: React.FC<any> = () => {
+  const registerReducer = useSelector(
+    (state: RootReducer) => state.registerReducer
+  );
+
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
   const classes: any = {
     root: { display: "flex", justifyContent: "center" },
     buttons: { marginTop: 2 },
@@ -87,11 +98,12 @@ const RegisterPage: React.FC<any> = () => {
           variant="outlined"
         />
         {/* <span>Debug {JSON.stringify(account)}</span> */}
+        {registerReducer.isError && <Alert severity="error">Register failed</Alert>}
         <Stack direction="row" spacing={2} sx={classes.buttons}>
           <Button onClick={() => navigate("/login")} type="button" fullWidth variant="outlined">
             Cancel
           </Button>
-          <Button type="submit" fullWidth variant="contained" color="primary" disabled={isSubmitting}>
+          <Button type="submit" fullWidth variant="contained" color="primary" disabled={registerReducer.isFetching}>
             Create
           </Button>
         </Stack>
@@ -110,16 +122,8 @@ const RegisterPage: React.FC<any> = () => {
               Register
             </Typography >
             <Formik
-              onSubmit={async (values, { setSubmitting }) => {
-                const result = await httpClient.post(
-                  server.REGISTER_URL,
-                  values
-                )
-
-                alert(JSON.stringify(result.data));
-                setTimeout(() => {
-                  setSubmitting(false);
-                }, 2000)
+              onSubmit={async (values, {}) => {
+                dispatch(registerActions.register(values, navigate));
               }}
               initialValues={initailValues} >
               {(props) => showFormV2(props)}
@@ -132,3 +136,4 @@ const RegisterPage: React.FC<any> = () => {
 };
 
 export default RegisterPage;
+
