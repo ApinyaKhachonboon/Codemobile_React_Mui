@@ -108,7 +108,7 @@ const LoginPage: React.FC<any> = () => {
     )
   }
 
-  const initailValues: User = { username: "lek", password: "xxxx" };
+  const initailValues: User = { username: "", password: "" };
   return (
     <>
       <Box sx={classes.root}>

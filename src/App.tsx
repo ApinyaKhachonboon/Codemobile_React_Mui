@@ -33,6 +33,8 @@ import { RootReducer } from './reducers';
 import { useSelector } from 'react-redux';
 import * as loginActions from "./actions/login.action";
 import { useAppDispatch } from '.';
+import PublicRoutes from './router/public.routes';
+import ProtectedRoutes from './router/protected.routes';
 
 const drawerWidth = 240;
 
@@ -142,15 +144,22 @@ export default function App() {
         <Main open={open}>
           <DrawerHeader />
           <Routes>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/stock" element={<StockPage />} />
-            <Route path="/stock/create" element={<StockCreatePage />} />
-            <Route path="/stock/edit/:id" element={<StockEditPage />} />
-            <Route path="/report" element={<ReportPage />} />
-            <Route path="/aboutus" element={<AboutUs />} />
-            <Route path="/" element={<Navigate to="/login" />} />
-            <Route path="*" element={<Notfound />} />
+            {/* Public routes */}
+            <Route path="/" element={<PublicRoutes />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+
+            {/* Protected routes */}
+            <Route path="/" element={<ProtectedRoutes />}>
+              <Route path="/stock" element={<StockPage />} />
+              <Route path="/stock/create" element={<StockCreatePage />} />
+              <Route path="/stock/edit/:id" element={<StockEditPage />} />
+              <Route path="/report" element={<ReportPage />} />
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="*" element={<Notfound />} />
+            </Route>
           </Routes>
         </Main>
       </Box>

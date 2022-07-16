@@ -22,6 +22,8 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import * as loginAction from "../../../actions/login.action";
+import { useAppDispatch } from "../../..";
 
 const drawerWidth = 240;
 
@@ -82,6 +84,7 @@ type HeaderProp = {
 export default function Header({open, onDrawerOpen}: HeaderProp) {
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleDrawerOpen = () => {
     // setOpen(true);
@@ -127,8 +130,7 @@ export default function Header({open, onDrawerOpen}: HeaderProp) {
             aria-label="account of current user"
             aria-haspopup="true"
             onClick={() => {
-              alert("Logout")
-              navigate('/login')
+              dispatch(loginAction.logout(navigate));
             }}
             color="inherit"
           >

@@ -6,6 +6,7 @@ import {
   LOGIN_SUCCESS,
   server,
   TOKEN,
+  LOGOUT,
 } from "../Constants";
 import { User } from "../types/user.type";
 import { httpClient } from "../utils/httpclient";
@@ -24,6 +25,11 @@ export const setLoginSuccessToState = (payload: LoginResult) => ({
 export const setLoginFailedToState = () => ({
   type: LOGIN_FAILED,
 });
+
+export const setLogoutToState = () => ({
+  type: LOGOUT,
+})
+
 
 export const login = (user: User, navigate: any) => {
   return async (dispatch: AppDispatch) => {
@@ -58,10 +64,19 @@ export const restoreLogin = () => {
     const token = localStorage.getItem(TOKEN);
     if (token) {
       dispatch(setLoginSuccessToState({
-        result: OK, 
-        token, 
+        result: OK,
+        token,
         message: "Login Successfully"
       }));
     }
   };
+};
+
+export const logout = (navigate: any) => {
+  return (dispatch: any) => {
+    const token = localStorage.removeItem(TOKEN);
+    dispatch(setLogoutToState());
+    alert("Logout successfully");
+    navigate("/login");
+  }
 };
