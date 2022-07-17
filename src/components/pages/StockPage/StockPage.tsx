@@ -57,6 +57,7 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
               aria-label="Clear"
               size="small"
               onClick={props.clearSearch}
+              style={{ visibility: props.value ? "visible" : "hidden" }}
             >
               <Clear fontSize="small" />
             </IconButton>
@@ -95,100 +96,7 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
   );
 }
 
-const stockColumns: GridColDef[] = [
-  {
-    headerName: "ID",
-    field: "id",
-    width: 50,
-  },
-  {
-    headerName: "IMG",
-    field: "image",
-    width: 80,
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <img
-        src={`${imageUrl}/images/${value}?dummy=${Math.random()}`}
-        style={{ width: 70, height: 70, borderRadius: "5%" }}
-      />
-    ),
-  },
-  {
-    headerName: "NAME",
-    field: "name",
-    width: 400,
-  },
-  {
-    headerName: "STOCK",
-    width: 120,
-    field: "stock",
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <Typography variant="body1">
-        <NumberFormat
-          value={value}
-          displayType={"text"}
-          thousandSeparator={true}
-          decimalScale={0}
-          fixedDecimalScale={true}
-        />
-      </Typography>
-    ),
-  },
-  {
-    headerName: "PRICE",
-    field: "price",
-    width: 120,
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <Typography variant="body1">
-        <NumberFormat
-          value={value}
-          displayType={"text"}
-          thousandSeparator={true}
-          decimalScale={2}
-          fixedDecimalScale={true}
-          prefix={"฿"}
-        />
-      </Typography>
-    ),
-  },
-  {
-    headerName: "TIME",
-    field: "createdAt",
-    width: 220,
-    renderCell: ({ value }: GridRenderCellParams<string>) => (
-      <Typography variant="body1">
-        <Moment format="DD/MM/YYYY HH:mm">{value}</Moment>
-      </Typography>
-    ),
-  },
-  {
-    headerName: "ACTION",
-    field: ".",
-    width: 120,
-    renderCell: ({ row }: GridRenderCellParams<string>) => (
-      <Stack direction="row">
-        <IconButton
-          aria-label="edit"
-          size="large"
-          onClick={() => {
-            // navigate("/stock/edit/" + row.id);
-          }}
-        >
-          <EditIcon fontSize="inherit" />
-        </IconButton>
-        <IconButton
-          aria-label="delete"
-          size="large"
-          onClick={() => {
-            // setSelectedProduct(row);
-            // setOpenDialog(true);
-          }}
-        >
-          <DeleteIcon fontSize="inherit" />
-        </IconButton>
-      </Stack>
-    ),
-  },
-];
+
 
 export default function StockPage() {
 
@@ -196,6 +104,106 @@ export default function StockPage() {
   const stockReducer = useSelector((state: RootReducer) => state.stockReducer);
   const dispatch = useAppDispatch();
   const [keywordSearch, setKeywordSearch] = useDebounce<string>("", 1000);
+  const [keywordSearchNoDelay, setKeywordSearchNoDelay] = React.useState<string>("");
+  const [selectedProduct, setSelectedProduct] = React.useState<Product | null>(null);
+  const [openDialog, setOpenDialog] = React.useState<boolean>(false);
+  const navigate = useNavigate();
+
+  const stockColumns: GridColDef[] = [
+    {
+      headerName: "ID",
+      field: "id",
+      width: 50,
+    },
+    {
+      headerName: "IMG",
+      field: "image",
+      width: 80,
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <img
+          src={`${imageUrl}/images/${value}?dummy=${Math.random()}`}
+          style={{ width: 70, height: 70, borderRadius: "5%" }}
+        />
+      ),
+    },
+    {
+      headerName: "NAME",
+      field: "name",
+      width: 400,
+    },
+    {
+      headerName: "STOCK",
+      width: 120,
+      field: "stock",
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <Typography variant="body1">
+          <NumberFormat
+            value={value}
+            displayType={"text"}
+            thousandSeparator={true}
+            decimalScale={0}
+            fixedDecimalScale={true}
+          />
+        </Typography>
+      ),
+    },
+    {
+      headerName: "PRICE",
+      field: "price",
+      width: 120,
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <Typography variant="body1">
+          <NumberFormat
+            value={value}
+            displayType={"text"}
+            thousandSeparator={true}
+            decimalScale={2}
+            fixedDecimalScale={true}
+            prefix={"฿"}
+          />
+        </Typography>
+      ),
+    },
+    {
+      headerName: "TIME",
+      field: "createdAt",
+      width: 220,
+      renderCell: ({ value }: GridRenderCellParams<string>) => (
+        <Typography variant="body1">
+          <Moment format="DD/MM/YYYY HH:mm">{value}</Moment>
+        </Typography>
+      ),
+    },
+    {
+      headerName: "ACTION",
+      field: ".",
+      width: 120,
+      renderCell: ({ row }: GridRenderCellParams<string>) => (
+        <Stack direction="row">
+          <IconButton
+            aria-label="edit"
+            size="large"
+            onClick={() => {
+              navigate("/stock/edit/" + row.id);
+            }}
+          >
+            <EditIcon fontSize="inherit" />
+          </IconButton>
+          <IconButton
+            aria-label="delete"
+            size="large"
+            onClick={() => {
+              // alert(JSON.stringify(row.id))
+              setSelectedProduct(row);
+              setOpenDialog(true);
+            }}
+          >
+            <DeleteIcon fontSize="inherit" />
+          </IconButton>
+        </Stack>
+      ),
+    },
+  ];
 
   React.useEffect(() => {
     dispatch(stockActions.loadStockByKeyword(keywordSearch));
@@ -206,6 +214,46 @@ export default function StockPage() {
     dispatch(stockActions.loadStock());
   }, []);
 
+  const showDialog = () => {
+    if (selectedProduct === null) {
+      return "";
+    }
+
+    return (
+      <Dialog
+        open={openDialog}
+        keepMounted
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle id="alert-dialog-slide-title">
+          <img
+            src={`${imageUrl}/images/${selectedProduct.image}?dummy=${Math.random()}`}
+            style={{ width: 100, borderRadius: "5%" }}
+          />
+          <br />
+          Confirm to delete the product? : {selectedProduct.name}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-slide-description">You cannot restore deleted product.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="info">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="primary">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
+  };
+
+  const handleDeleteConfirm = () => {
+    dispatch(stockActions.deleteProduct(String(selectedProduct!.id!)));
+    setOpenDialog(false);
+  };
+
   return (
     <Box>
       <DataGrid
@@ -213,10 +261,15 @@ export default function StockPage() {
         components={{ Toolbar: QuickSearchToolbar }}
         componentsProps={{
           toolbar: {
+            value: keywordSearchNoDelay,
             onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
               setKeywordSearch(e.target.value);
+              setKeywordSearchNoDelay(e.target.value);
             },
-            clearSearch: () => setKeywordSearch("")
+            clearSearch: () => {
+              setKeywordSearch("")
+              setKeywordSearchNoDelay("")
+            }
           }
         }}
         rows={stockReducer.result}
@@ -224,6 +277,7 @@ export default function StockPage() {
         pageSize={10}
         rowsPerPageOptions={[5]}
       />
+      {showDialog()}
     </Box>
   );
 }
