@@ -77,7 +77,7 @@ const theme = createTheme({
   },
   spacing: 8,
   palette: {
-    primary: blueGrey,
+    primary: process.env.REACT_APP_IS_PRODUCTION == "1" ? blue : blueGrey,
     background: {
       default: "#CFD2D6",
     },
@@ -141,13 +141,17 @@ export default function App() {
         <CssBaseline />
         {loginReducer.result && <Header open={open} onDrawerOpen={handleDrawerOpen} />}
         {loginReducer.result && <Menu open={open} onDrawerClose={handleDrawerClose} />}
-        <Main open={open}>
+        <Main open={open}
+          sx={{ backgroundImage: "url(" + `${process.env.PUBLIC_URL}/images/background.jpg` + ")", height: "100vh" }}
+        >
           <DrawerHeader />
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<PublicRoutes />}>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
+              <Route path="/" element={<Navigate to="/login" />} />
+              <Route path="*" element={<Notfound />} />
             </Route>
 
             {/* Protected routes */}
@@ -157,8 +161,6 @@ export default function App() {
               <Route path="/stock/edit/:id" element={<StockEditPage />} />
               <Route path="/report" element={<ReportPage />} />
               <Route path="/aboutus" element={<AboutUs />} />
-              <Route path="/" element={<Navigate to="/login" />} />
-              <Route path="*" element={<Notfound />} />
             </Route>
           </Routes>
         </Main>

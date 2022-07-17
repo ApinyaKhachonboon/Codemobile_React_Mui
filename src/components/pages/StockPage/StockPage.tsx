@@ -29,6 +29,7 @@ import { useDebounce, useDebounceCallback } from "@react-hook/debounce";
 import { Product } from "../../../types/product.type";
 import { useAppDispatch } from "../../..";
 import { RootReducer } from "../../../reducers";
+import StockCard from "../../layouts/StockCard";
 
 interface QuickSearchToolbarProps {
   clearSearch: () => void;
@@ -256,6 +257,24 @@ export default function StockPage() {
 
   return (
     <Box>
+      {/* Summary Icons */}
+      <Grid container style={{ marginBottom: 16 }} spacing={7}>
+        <Grid item lg={3} md={6}>
+          <StockCard icon={AddShoppingCart} title="TOTAL" subtitle="112 THB" color="#00a65a" />
+        </Grid>
+
+        <Grid item lg={3} md={6}>
+          <StockCard icon={NewReleases} title="EMPTY" subtitle="9 PCS." color="#f39c12" />
+        </Grid>
+
+        <Grid item lg={3} md={6}>
+          <StockCard icon={AssignmentReturn} title="RETURN" subtitle="1 PCS." color="#dd4b39" />
+        </Grid>
+
+        <Grid item lg={3} md={6}>
+          <StockCard icon={Star} title="LOSS" subtitle="5 PCS." color="#00c0ef" />
+        </Grid>
+      </Grid>
       <DataGrid
         sx={{ backgroundColor: "white", height: "70vh" }}
         components={{ Toolbar: QuickSearchToolbar }}

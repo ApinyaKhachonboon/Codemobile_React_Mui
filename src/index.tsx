@@ -24,7 +24,7 @@ export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 //// ให้ logger อยู่หลังสุดเสมอ ไม่งั้นจะ print มาเพี้ยน
-if (true || process.env.REACT_APP_IS_PRODUCTION !== "1") {
+if (process.env.REACT_APP_IS_PRODUCTION !== "1") {
   middlewares.push(logger);
 }
 
